@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Signup/Signin Page</title>
+    <link rel="stylesheet" href="signin-page-style.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div id="signup-image">
+            <img src="images/signin.jpg" alt="signin image" id="signin-image">
+        </div>
+        <div id="signup-form" class="auth-form">
+            <h1>Welcome Back !</h1>
+
+            <!-- username  -->
+            <label for="signup-username"></label>
+            <input type="text" id="signup-username" name="signup-username" placeholder="Username" required>
+            <br>
+
+            <!-- password -->
+            <label for="signup-password"></label>
+            <input type="password" id="signup-password" name="signup-password" placeholder="Password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters" required>
+            <br>
+            
+            <!-- signup button  -->
+            <button type="submit" id="signin-button">Log In</button>
+
+            <!-- separator  -->
+            <div class="separator">
+                <span>Or sign in through</span>
+            </div>
+
+            <!-- direct logins  -->
+            <div class="direct-logins">
+                <button class="direct-login-button">
+                    <img src="./images/google-logo.png" alt="google-logo" id="google-logo" class="direct-login-logo">
+                    Google
+                </button>
+                <button class="direct-login-button">
+                    <img src="./images/apple-logo.png" alt="apple-logo" id="apple-logo" class="direct-login-logo">
+                    Apple
+                </button>
+            </div>
+
+            <!-- switch to signup -->
+            <div id="switch">
+                <span>Don't have an account ?</span>
+                <a href="signup-page.html" id="signup-link">Signup</a>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
