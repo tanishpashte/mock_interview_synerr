@@ -1,0 +1,130 @@
+/* .material-symbols-outlined {
+  font-variation-settings:
+  'FILL' 0,
+  'wght' 400,
+  'GRAD' 0,
+  'opsz' 24
+} */
+
+
+*{
+    padding: 0;
+    margin: 0;
+}
+
+html, body{
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+nav{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0px 20px;
+    height: 80px;
+    background-color: #243642;
+    color: #E2F1E7;
+}
+
+.nav-left{
+    display: flex;
+}
+
+img{
+    height: 50px;
+    width: auto;
+}
+
+#product-name{
+    display: flex;
+    align-items: center;
+    font-size: 24px;
+}
+
+.nav-right{
+    display: flex;
+}
+
+li{
+    list-style-type: none;
+}
+
+.nav-links{
+    text-decoration: none;
+    color: #E2F1E7;
+    margin: 5px;
+}
+
+main {
+    display: flex;
+    flex: 1 0 auto; /* Allow main content to expand */
+    /* flex-direction: row; */
+}
+
+.left-content{
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    /* background-color: red; */
+    /* height: 100%; */
+    /* background-color: red; */
+}
+
+.left-content-text{
+    width: 600px;
+    /* border: 2px solid red; */
+    padding-left: 20px;
+}
+
+#content-heading{
+    margin-bottom: 10px;
+    font-size: 48px;
+    color: #243642
+}
+
+#content-description{
+    font-size: 24px;
+    color: #387478
+}
+
+#interview-button{
+    margin-top: 20px;
+    background-color: #243642;
+    color: #E2F1E7;
+    padding: 10px;
+    font-size: 18px;
+    border-radius: 5px;
+}
+
+.right-content{
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    /* height: 100%; */
+    /* background-color: green; */
+}
+
+#interview-image{
+    width: 500px;
+    height: auto;
+}
+
+footer {
+    background-color: #243642;
+    color: #E2F1E7;
+    height: 70px;
+    width: 100%;
+    padding: 0px 30px;
+    display: flex;
+    align-items: center;
+    flex: 0 0 auto; /* Fixes footer to bottom */
+}
