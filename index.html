@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://kit.fontawesome.com/efd35c9483.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="style.css">
     <title>Prep with ML</title>
 </head>
@@ -16,12 +17,24 @@
             <div id="product-name">Interview wallah</div>
         </div>
         
-        <ul class="nav-right">
+        <ul class="nav-right" id="nav-right">
             <li><a href="#" class="nav-links">About</a></li>
             <!-- <li><a href="#" class="nav-links">Categories</a></li> -->
             <li><a href="./signup-page.html" class="nav-links">Sign Up</a></li>
             <li><a href="./signin-page.html" class="nav-links">Log In</a></li>
         </ul>
+
+        <!-- User nav (shown when user is logged in) -->
+        <div id="user-nav" style="display: none;">
+            <a href="#">About</a>
+            <span id="username"></span>
+            <div class="dropdown">
+                <button class="dropbtn"><img src="./images/user.png" alt="user-image" id="user-image"></button>
+                <div class="dropdown-content">
+                    <a href="#" onclick="logout()">Logout</a>
+                </div>
+            </div>
+        </div>
     </nav>
     
     <main>
@@ -41,5 +54,6 @@
     <footer>
         <p>Made with Love ❤️</p>
     </footer>
+    <script type="module" src="test.mjs"></script>
 </body>
 </html>
