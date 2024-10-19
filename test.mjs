@@ -49,9 +49,9 @@ function updateUI(user) {
 // Auth state listener
 onAuthStateChanged(auth, (user) => {
   updateUI(user);
-  if (user && window.location.pathname !== 'https://tanishpashte.github.io/mock_interview_synerr/') {
-    window.location.href = 'https://tanishpashte.github.io/mock_interview_synerr/';
-  }
+  // if (user && window.location.pathname !== 'https://tanishpashte.github.io/mock_interview_synerr/') {
+  //   window.location.href = 'https://tanishpashte.github.io/mock_interview_synerr/';
+  // }
 });
 
 
@@ -125,7 +125,7 @@ function handleGoogleAuth() {
   .then((result) => {
     console.log("User authenticated with Google successfully:", result.user);
     // Remove any redirect here, let the auth state listener handle it
-    // window.location.href = 'https://tanishpashte.github.io/mock_interview_synerr/';
+    window.location.href = 'https://tanishpashte.github.io/mock_interview_synerr/';
     // updateUI(auth.currentUser);
   }).catch((error) => {
       console.error("Error authenticating with Google:", error.code, error.message);
