@@ -47,6 +47,7 @@ function updateUI(user) {
 
 
 let isRedirecting = false;
+
 onAuthStateChanged(auth, (user) => {
   const currentPath = window.location.pathname;
   const isHomePage = currentPath.endsWith('index.html') || currentPath === '/mock_interview_synerr/';
@@ -56,6 +57,8 @@ onAuthStateChanged(auth, (user) => {
     if (!isHomePage && !isRedirecting) {
       isRedirecting = true;
       window.location.href = 'https://tanishpashte.github.io/mock_interview_synerr/';
+    } else {
+      isRedirecting = false; // Reset if no redirection needed
     }
   } else {
     // Prevent redirect loops by ensuring non-authenticated users are not redirected from public pages
@@ -64,9 +67,10 @@ onAuthStateChanged(auth, (user) => {
     if (!isPublicPage && !isRedirecting) {
       isRedirecting = true;
       window.location.href = '/signin-page.html';  // Redirect to a sign-in page or a public page
+    } else {
+      isRedirecting = false; // Reset if no redirection needed
     }
   }
-  isRedirecting = false; // Reset after handling redirection
 });
 
 
