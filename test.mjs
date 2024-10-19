@@ -50,13 +50,10 @@ function updateUI(user) {
   }
 }
 
-
 onAuthStateChanged(auth, (user) => {
   // Only update the UI, no redirection handled here
   updateUI(user);
 });
-
-
 
 // Authentication functions
 function signUp(username, email, password) {
@@ -195,6 +192,23 @@ document.addEventListener('DOMContentLoaded', function() {
     if (deleteAccountButton) {
       deleteAccountButton.addEventListener('click', deleteAccount);
     }
+  }
+});
+
+document.getElementById('interview-button').addEventListener('click', function() {
+  // Mock function to check if the user is logged in
+  // Replace this with your actual logic to check login status
+  // function isUserLoggedIn() {
+  //   // This should return true if the user is logged in, false otherwise
+  //   // For example, you might check if a token exists in local storage
+  //   return localStorage.getItem('userLoggedIn') === 'true';
+  // }
+  console.log('interview button clicked');
+
+  if (auth.currentUser) {
+    window.location.href = '/interview.html';
+  } else {
+    window.location.href = '/signin-page.html';
   }
 });
 
