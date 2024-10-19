@@ -27,30 +27,24 @@ const auth = getAuth(app);
 
 // UI update function
 function updateUI(user) {
-  // window.location.href = 'https://tanishpashte.github.io/mock_interview_synerr/';
   const authNav = document.getElementById('nav-right');
   const userNav = document.getElementById('user-nav');
   const usernameSpan = document.getElementById('username');
   
   if (user) {
-    if (authNav.style.display !== 'none') {
-      authNav.style.display = 'none';
-    }
-    if (userNav.style.display !== 'flex') {
-      userNav.style.display = 'flex';
-    }
-    if (usernameSpan.textContent !== (user.displayName || user.email)) {
-      usernameSpan.textContent = user.displayName || user.email;
-    }
+    // Hide auth navigation and show user navigation
+    authNav.style.display = 'none';
+    userNav.style.display = 'flex';
+    
+    // Update username or email display
+    usernameSpan.textContent = user.displayName || user.email;
   } else {
-    if (authNav.style.display !== 'flex') {
-      authNav.style.display = 'flex';
-    }
-    if (userNav.style.display !== 'none') {
-      userNav.style.display = 'none';
-    }
+    // Show auth navigation and hide user navigation
+    authNav.style.display = 'flex';
+    userNav.style.display = 'none';
   }
 }
+
 
 let isRedirecting = false;
 onAuthStateChanged(auth, (user) => {
