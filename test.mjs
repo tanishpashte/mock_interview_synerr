@@ -32,36 +32,30 @@ function updateUI(user) {
   const usernameSpan = document.getElementById('username');
   
   if (user) {
-    authNav.style.display = 'none';
-    userNav.style.display = 'flex';
-    usernameSpan.textContent = user.displayName || user.email;
+    if (authNav.style.display !== 'none') {
+      authNav.style.display = 'none';
+    }
+    if (userNav.style.display !== 'flex') {
+      userNav.style.display = 'flex';
+    }
+    if (usernameSpan.textContent !== (user.displayName || user.email)) {
+      usernameSpan.textContent = user.displayName || user.email;
+    }
   } else {
-    if (authNav.style.display !== 'flex'){
-
+    if (authNav.style.display !== 'flex') {
       authNav.style.display = 'flex';
+    }
+    if (userNav.style.display !== 'none') {
       userNav.style.display = 'none';
     }
   }
 }
 
 // Auth state listener
-let isRedirecting = false;
-onAuthStateChanged(auth, (user) => {
-  updateUI(user);
-  const currentPath = window.location.pathname;
-  const isHomePage = currentPath.endsWith('index.html') || currentPath === '/mock_interview_synerr/';
-  
-  if (user && !isHomePage && !isRedirecting) {
-    isRedirecting = true;
-    window.location.href = 'https://tanishpashte.github.io/mock_interview_synerr/';
-  } else if (!user && isHomePage && !isRedirecting) {
-    isRedirecting = true;
-    window.location.href = 'signin-page.html';
-  } else {
-    isRedirecting = false;
-  }
-  
-});
+// let isRedirecting = false;
+// onAuthStateChanged(auth, (user) => {
+//   updateUI(user);
+// });
 
 // Authentication functions
 function signUp(username, email, password) {
@@ -71,6 +65,7 @@ function signUp(username, email, password) {
     })
     .then(() => {
       console.log("Sign up successful");
+      window.location.href = 'https://tanishpashte.github.io/mock_interview_synerr/';
       updateUI(auth.currentUser);
     })
     .catch((error) => {
@@ -82,6 +77,8 @@ function signIn(email, password) {
   signInWithEmailAndPassword(auth, email, password)
     .then(() => {
       console.log("Sign in successful");
+      window.location.href = 'https://tanishpashte.github.io/mock_interview_synerr/';
+      updateUI(auth.currentUser);
     })
     .catch((error) => {
       console.error("Error signing in:", error.code, error.message);
@@ -93,6 +90,7 @@ function logout() {
   signOut(auth).then(() => {
     localStorage.removeItem('user');
     updateUI(null);
+    window.location.href = 'https://tanishpashte.github.io/mock_interview_synerr/';
   }).catch((error) => {
     console.error("Error signing out:", error);
     alert("Failed to sign out. Please try again.");
@@ -109,8 +107,9 @@ function deleteAccount() {
   if (confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
     deleteUser(user).then(() => {
       localStorage.removeItem('user');
-      updateUI(null);
       window.location.href = 'https://tanishpashte.github.io/mock_interview_synerr/';
+      updateUI(null);
+      alert("Your account has been deleted successfully.");
     }).catch((error) => {
       console.error("Error deleting user account:", error);
       if (error.code === 'auth/requires-recent-login') {
@@ -128,6 +127,8 @@ function handleGoogleAuth() {
   .then((result) => {
     console.log("User authenticated with Google successfully:", result.user);
     // Remove any redirect here, let the auth state listener handle it
+    window.location.href = 'https://tanishpashte.github.io/mock_interview_synerr/';
+    updateUI(auth.currentUser);
   }).catch((error) => {
       console.error("Error authenticating with Google:", error.code, error.message);
       alert("Failed to authenticate with Google. Please try again.");
