@@ -67,7 +67,7 @@ function signUp(username, email, password) {
 function signIn(email, password) {
   signInWithEmailAndPassword(auth, email, password)
     .then(() => {
-      window.location.href = '/index.html';
+      window.location.href = 'https://tanishpashte.github.io/mock_interview_synerr/';
     })
     .catch((error) => {
       console.error("Error signing in:", error.code, error.message);
@@ -79,7 +79,7 @@ function logout() {
   signOut(auth).then(() => {
     localStorage.removeItem('user');
     updateUI(null);
-    window.location.href = '/index.html';
+    window.location.href = 'https://tanishpashte.github.io/mock_interview_synerr/';
   }).catch((error) => {
     console.error("Error signing out:", error);
     alert("Failed to sign out. Please try again.");
