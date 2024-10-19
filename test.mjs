@@ -36,18 +36,22 @@ function updateUI(user) {
     userNav.style.display = 'flex';
     usernameSpan.textContent = user.displayName || user.email;
   } else {
-    authNav.style.display = 'flex';
-    userNav.style.display = 'none';
+    if (authNav.style.display !== 'flex'){
+
+      authNav.style.display = 'flex';
+      userNav.style.display = 'none';
+    }
   }
 }
 
 // Auth state listener
+let isRedirecting = false;
 onAuthStateChanged(auth, (user) => {
-  
+  updateUI(user);
   if (user && window.location.pathname !== 'https://tanishpashte.github.io/mock_interview_synerr/') {
     window.location.href = 'https://tanishpashte.github.io/mock_interview_synerr/';
   }
-  updateUI(user);
+  
 });
 
 // Authentication functions
