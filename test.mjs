@@ -56,7 +56,7 @@ function signUp(username, email, password) {
       return updateProfile(userCredential.user, { displayName: username });
     })
     .then(() => {
-      window.location.href = "/index.html";
+      window.location.href = "https://tanishpashte.github.io/mock_interview_synerr/";
       updateUI(auth.currentUser);
     })
     .catch((error) => {
