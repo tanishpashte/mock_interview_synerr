@@ -54,17 +54,27 @@ function updateUI(user) {
 
 let isRedirecting = false;
 onAuthStateChanged(auth, (user) => {
-  updateUI(user);
   const currentPath = window.location.pathname;
   const isHomePage = currentPath.endsWith('index.html') || currentPath === '/mock_interview_synerr/';
 
-  if (user && !isHomePage && !isRedirecting) {
-    isRedirecting = true;
-    window.location.href = 'https://tanishpashte.github.io/mock_interview_synerr/';
+  if (user) {
+    // Redirect logged-in users to the homepage only if they are not already on the homepage
+    if (!isHomePage && !isRedirecting) {
+      isRedirecting = true;
+      window.location.href = 'https://tanishpashte.github.io/mock_interview_synerr/';
+    }
   } else {
-    isRedirecting = false;
+    // Prevent redirect loops by ensuring non-authenticated users are not redirected from public pages
+    const isPublicPage = currentPath.includes('signin-page.html') || currentPath.includes('signup-page.html');
+    
+    if (!isPublicPage && !isRedirecting) {
+      isRedirecting = true;
+      window.location.href = '/signin-page.html';  // Redirect to a sign-in page or a public page
+    }
   }
+  isRedirecting = false; // Reset after handling redirection
 });
+
 
 // Authentication functions
 function signUp(username, email, password) {
@@ -136,7 +146,7 @@ function handleGoogleAuth() {
   .then((result) => {
     console.log("User authenticated with Google successfully:", result.user);
     // Remove any redirect here, let the auth state listener handle it
-    window.location.href = 'https://tanishpashte.github.io/mock_interview_synerr/';
+    // window.location.href = 'https://tanishpashte.github.io/mock_interview_synerr/';
     // updateUI(auth.currentUser);
   }).catch((error) => {
       console.error("Error authenticating with Google:", error.code, error.message);
@@ -200,4 +210,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Initial UI update
-updateUI(auth.currentUser);
+// updateUI(auth.currentUser);
