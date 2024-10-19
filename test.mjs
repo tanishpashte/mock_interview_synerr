@@ -44,8 +44,8 @@ function updateUI(user) {
 // Auth state listener
 onAuthStateChanged(auth, (user) => {
   updateUI(user);
-  if (user && window.location.pathname !== '/index.html') {
-    window.location.href = '/index.html';
+  if (user && window.location.pathname !== 'https://tanishpashte.github.io/mock_interview_synerr/') {
+    window.location.href = 'https://tanishpashte.github.io/mock_interview_synerr/';
   }
 });
 
@@ -97,7 +97,7 @@ function deleteAccount() {
     deleteUser(user).then(() => {
       localStorage.removeItem('user');
       updateUI(null);
-      window.location.href = '/index.html';
+      window.location.href = 'https://tanishpashte.github.io/mock_interview_synerr/';
     }).catch((error) => {
       console.error("Error deleting user account:", error);
       if (error.code === 'auth/requires-recent-login') {
@@ -113,7 +113,7 @@ function handleGoogleAuth() {
   const provider = new GoogleAuthProvider();
   signInWithPopup(auth, provider)
     .then(() => {
-      window.location.href = 'index.html';
+      window.location.href = 'https://tanishpashte.github.io/mock_interview_synerr/';
     }).catch((error) => {
       console.error("Error authenticating with Google:", error.code, error.message);
       alert("Failed to authenticate with Google. Please try again.");
@@ -158,7 +158,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     googleSigninButton.addEventListener("click", handleGoogleAuth);
 
-  } else if (currentPath.includes('index.html')) {
+  } else if (currentPath.includes('https://tanishpashte.github.io/mock_interview_synerr/')) {
     const logoutLink = document.getElementById('logout-link');
     const deleteAccountButton = document.getElementById('delete-account-button');
     
