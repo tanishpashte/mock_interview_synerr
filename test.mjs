@@ -43,10 +43,11 @@ function updateUI(user) {
 
 // Auth state listener
 onAuthStateChanged(auth, (user) => {
-  updateUI(user);
+  
   if (user && window.location.pathname !== 'https://tanishpashte.github.io/mock_interview_synerr/') {
     window.location.href = 'https://tanishpashte.github.io/mock_interview_synerr/';
   }
+  updateUI(user);
 });
 
 // Authentication functions
