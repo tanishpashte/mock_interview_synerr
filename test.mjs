@@ -206,9 +206,9 @@ document.getElementById('interview-button').addEventListener('click', function()
   console.log('interview button clicked');
 
   if (auth.currentUser) {
-    window.location.href = '/interview.html';
+    window.location.href = 'https://tanishpashte.github.io/mock_interview_synerr/interview.html';
   } else {
-    window.location.href = '/signin-page.html';
+    window.location.href = 'https://tanishpashte.github.io/mock_interview_synerr/signin-page.html';
   }
 });
 
