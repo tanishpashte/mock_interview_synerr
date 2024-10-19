@@ -27,7 +27,7 @@ const auth = getAuth(app);
 
 // UI update function
 function updateUI(user) {
-  window.location.href = 'https://tanishpashte.github.io/mock_interview_synerr/';
+  // window.location.href = 'https://tanishpashte.github.io/mock_interview_synerr/';
   const authNav = document.getElementById('nav-right');
   const userNav = document.getElementById('user-nav');
   const usernameSpan = document.getElementById('username');
