@@ -48,8 +48,17 @@ function updateUI(user) {
 let isRedirecting = false;
 onAuthStateChanged(auth, (user) => {
   updateUI(user);
-  if (user && window.location.pathname !== 'https://tanishpashte.github.io/mock_interview_synerr/') {
+  const currentPath = window.location.pathname;
+  const isHomePage = currentPath.endsWith('index.html') || currentPath === '/mock_interview_synerr/';
+  
+  if (user && !isHomePage && !isRedirecting) {
+    isRedirecting = true;
     window.location.href = 'https://tanishpashte.github.io/mock_interview_synerr/';
+  } else if (!user && isHomePage && !isRedirecting) {
+    isRedirecting = true;
+    window.location.href = 'signin-page.html';
+  } else {
+    isRedirecting = false;
   }
   
 });
@@ -61,7 +70,7 @@ function signUp(username, email, password) {
       return updateProfile(userCredential.user, { displayName: username });
     })
     .then(() => {
-      window.location.href = "https://tanishpashte.github.io/mock_interview_synerr/";
+      console.log("Sign up successful");
       updateUI(auth.currentUser);
     })
     .catch((error) => {
@@ -72,7 +81,7 @@ function signUp(username, email, password) {
 function signIn(email, password) {
   signInWithEmailAndPassword(auth, email, password)
     .then(() => {
-      window.location.href = 'https://tanishpashte.github.io/mock_interview_synerr/';
+      console.log("Sign in successful");
     })
     .catch((error) => {
       console.error("Error signing in:", error.code, error.message);
@@ -84,7 +93,6 @@ function logout() {
   signOut(auth).then(() => {
     localStorage.removeItem('user');
     updateUI(null);
-    window.location.href = 'https://tanishpashte.github.io/mock_interview_synerr/';
   }).catch((error) => {
     console.error("Error signing out:", error);
     alert("Failed to sign out. Please try again.");
@@ -117,9 +125,10 @@ function deleteAccount() {
 function handleGoogleAuth() {
   const provider = new GoogleAuthProvider();
   signInWithPopup(auth, provider)
-    .then(() => {
-      window.location.href = 'https://tanishpashte.github.io/mock_interview_synerr/';
-    }).catch((error) => {
+  .then((result) => {
+    console.log("User authenticated with Google successfully:", result.user);
+    // Remove any redirect here, let the auth state listener handle it
+  }).catch((error) => {
       console.error("Error authenticating with Google:", error.code, error.message);
       alert("Failed to authenticate with Google. Please try again.");
     });
