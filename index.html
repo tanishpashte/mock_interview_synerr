@@ -26,14 +26,21 @@
 
         <!-- User nav (shown when user is logged in) -->
         <div id="user-nav" style="display: none;">
-            <a href="#">About</a>
-            <span id="username"></span>
+            <a href="#" id="about">About</a>
+
             <div class="dropdown">
-                <button class="dropbtn"><img src="./images/user.png" alt="user-image" id="user-image"></button>
+                
+                <button class="dropbtn">
+                    <img src="./images/user.png" alt="user-image" id="user-image">
+                    <span id="username"></span>
+                </button>
                 <div class="dropdown-content">
-                    <a href="#" onclick="logout()">Logout</a>
+                    <a href="#" id="logout-link">Logout</a>
                 </div>
             </div>
+                
+            
+            
         </div>
     </nav>
     

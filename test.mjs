@@ -58,7 +58,8 @@ onAuthStateChanged(auth, (user) => {
 });
 
 // Handle form submission
-const signupForm = document.getElementById("signup-form");
+if (window.location.pathname.includes('signup-page.html')){
+  const signupForm = document.getElementById("signup-form");
 signupForm.addEventListener("submit", (e) => {
   e.preventDefault();
   console.log("Signup form submitted"); // Debugging line
@@ -100,20 +101,47 @@ signupForm.addEventListener("submit", (e) => {
       console.error("Error:", errorCode, errorMessage);
     });
 });
+}
 
-// Logout function
+// Simple logout function
+// Logout function using Firebase
 function logout() {
   signOut(auth).then(() => {
-    console.log("User signed out");
-    updateUI(null); // Update UI after logout
-    // Redirect to login page or update UI
+    console.log("User signed out successfully");
+    // Clear any additional user session data if needed
+    // localStorage.removeItem('user');
+    
+    // Update UI
+    updateUI(null);
+    
+    // Redirect to login page
+    window.location.href = 'index.html';
   }).catch((error) => {
     console.error("Error signing out:", error);
+    alert("Failed to sign out. Please try again.");
   });
 }
 
-// Attach logout function to window object so it can be called from HTML
-window.logout = logout;
+// Check if we're on the index page
+if (window.location.pathname.includes('index.html')) {
+  document.addEventListener('DOMContentLoaded', function() {
+    console.log("DOM fully loaded");
+    const logoutLink = document.getElementById('logout-link');
+    console.log("Logout link:", logoutLink);
+    
+    if (logoutLink) {
+      logoutLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        logout();
+      });
+    } else {
+      console.error("Logout link not found in the DOM");
+    }
+  });
+} else {
+  console.log("Not on index.html, current path:", window.location.pathname);
+}
+
 
 // console.log("Firebase has been initialized: ", app);
 updateUI(auth.currentUser);
