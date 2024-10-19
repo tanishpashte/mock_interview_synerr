@@ -1,5 +1,16 @@
+// Firebase imports and initialization
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
-import { getAuth, createUserWithEmailAndPassword, updateProfile, onAuthStateChanged, signOut  } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
+import { 
+  getAuth, 
+  createUserWithEmailAndPassword, 
+  updateProfile, 
+  onAuthStateChanged, 
+  signOut, 
+  signInWithEmailAndPassword, 
+  deleteUser, 
+  GoogleAuthProvider,
+  signInWithPopup
+} from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyB00jg1XzU4mrgy-xvN0GrOQmNpDO3dnaA",
@@ -11,140 +22,158 @@ const firebaseConfig = {
   measurementId: "G-QWBB7JQBG6"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// console.log("Firebase initialized:", app); // Debugging line
-// if (!auth) {
-//   console.error("Firebase Auth failed to load");
-// } else {
-//   console.log("Firebase Auth loaded successfully");
-// }
-
-// Function to update UI based on auth state
+// UI update function
 function updateUI(user) {
-  // console.log(document);
-  // console.log("Updating UI for user:", user); // Debugging line
   const authNav = document.getElementById('nav-right');
   const userNav = document.getElementById('user-nav');
   const usernameSpan = document.getElementById('username');
-
-  // console.log("Auth Nav:", authNav); // Debugging line
-  // console.log("User Nav:", userNav); // Debugging line
   
   if (user) {
-    console.log("User is signed in, updating UI"); // Debugging line
     authNav.style.display = 'none';
     userNav.style.display = 'flex';
     usernameSpan.textContent = user.displayName || user.email;
   } else {
-    console.log("No user signed in, reverting UI"); // Debugging line
     authNav.style.display = 'flex';
     userNav.style.display = 'none';
   }
 }
 
-// Listen for auth state changes
+// Auth state listener
 onAuthStateChanged(auth, (user) => {
-  // console.log("Auth state changed:", user); // Debugging line
   updateUI(user);
-  if (user) {
-    // User is signed in, redirect to index.html if not already there
-    if (window.location.pathname !== '/index.html') {
-      window.location.href = '/index.html';
-    }
+  if (user && window.location.pathname !== '/index.html') {
+    window.location.href = '/index.html';
   }
 });
 
-// Handle form submission
-if (window.location.pathname.includes('signup-page.html')){
-  const signupForm = document.getElementById("signup-form");
-signupForm.addEventListener("submit", (e) => {
-  e.preventDefault();
-  console.log("Signup form submitted"); // Debugging line
-  const username = document.getElementById("signup-username").value;
-  const email = document.getElementById("signup-email").value;
-  const password = document.getElementById("signup-password").value;
-  const confirmPassword = document.getElementById("signup-confirm-password").value;
-
-  // heck if passwords match
-  if (password !== confirmPassword) {
-    console.error("Passwords do not match");
-    // You might want to display this error to the user
-    return;
-  }
-
-  // Create a new user
+// Authentication functions
+function signUp(username, email, password) {
   createUserWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
-      // Signed up successfully
-      const user = userCredential.user;
-      console.log("User signed up:", user);
-      // Update the user's profile with the username
-      return updateProfile(user, {
-        displayName: username
-      });
+      return updateProfile(userCredential.user, { displayName: username });
     })
     .then(() => {
-      console.log("Username added to profile");
-      console.log("Profile updated"); // Debugging line
       window.location.href = "/index.html";
-      updateUI(auth.currentUser); // Manually update UI after profile update
-      // You might want to redirect the user or update the UI here
-      
+      updateUI(auth.currentUser);
     })
     .catch((error) => {
-      // Handle errors
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      console.error("Error:", errorCode, errorMessage);
+      console.error("Error:", error.code, error.message);
     });
-});
 }
 
-// Simple logout function
-// Logout function using Firebase
+function signIn(email, password) {
+  signInWithEmailAndPassword(auth, email, password)
+    .then(() => {
+      window.location.href = '/index.html';
+    })
+    .catch((error) => {
+      console.error("Error signing in:", error.code, error.message);
+      alert("Failed to sign in. Please check your email and password.");
+    });
+}
+
 function logout() {
   signOut(auth).then(() => {
-    console.log("User signed out successfully");
-    // Clear any additional user session data if needed
-    // localStorage.removeItem('user');
-    
-    // Update UI
+    localStorage.removeItem('user');
     updateUI(null);
-    
-    // Redirect to login page
-    window.location.href = 'index.html';
+    window.location.href = '/index.html';
   }).catch((error) => {
     console.error("Error signing out:", error);
     alert("Failed to sign out. Please try again.");
   });
 }
 
-// Check if we're on the index page
-if (window.location.pathname.includes('index.html')) {
-  document.addEventListener('DOMContentLoaded', function() {
-    console.log("DOM fully loaded");
+function deleteAccount() {
+  const user = auth.currentUser;
+  if (!user) {
+    alert("You must be signed in to delete your account.");
+    return;
+  }
+
+  if (confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
+    deleteUser(user).then(() => {
+      localStorage.removeItem('user');
+      updateUI(null);
+      window.location.href = '/index.html';
+    }).catch((error) => {
+      console.error("Error deleting user account:", error);
+      if (error.code === 'auth/requires-recent-login') {
+        alert("For security reasons, please sign out and sign in again before deleting your account.");
+      } else {
+        alert("Failed to delete account. Please try again later.");
+      }
+    });
+  }
+}
+
+function handleGoogleAuth() {
+  const provider = new GoogleAuthProvider();
+  signInWithPopup(auth, provider)
+    .then(() => {
+      window.location.href = 'index.html';
+    }).catch((error) => {
+      console.error("Error authenticating with Google:", error.code, error.message);
+      alert("Failed to authenticate with Google. Please try again.");
+    });
+}
+
+// Event listeners
+document.addEventListener('DOMContentLoaded', function() {
+  const currentPath = window.location.pathname;
+
+  if (currentPath.includes('signup-page.html')) {
+    const signupForm = document.getElementById("signup-form");
+    const googleSignupButton = document.getElementById("google-signup-button");
+
+    signupForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const username = document.getElementById("signup-username").value;
+      const email = document.getElementById("signup-email").value;
+      const password = document.getElementById("signup-password").value;
+      const confirmPassword = document.getElementById("signup-confirm-password").value;
+      
+      if (password !== confirmPassword) {
+        console.error("Passwords do not match");
+        return;
+      }
+      
+      signUp(username, email, password);
+    });
+
+    googleSignupButton.addEventListener("click", handleGoogleAuth);
+
+  } else if (currentPath.includes('signin-page.html')) {
+    const signinForm = document.getElementById("signin-form");
+    const googleSigninButton = document.getElementById("google-signin-button");
+    
+    signinForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const email = document.getElementById("signin-email").value;
+      const password = document.getElementById("signin-password").value;
+      signIn(email, password);
+    });
+    
+    googleSigninButton.addEventListener("click", handleGoogleAuth);
+
+  } else if (currentPath.includes('index.html')) {
     const logoutLink = document.getElementById('logout-link');
-    console.log("Logout link:", logoutLink);
+    const deleteAccountButton = document.getElementById('delete-account-button');
     
     if (logoutLink) {
-      logoutLink.addEventListener('click', function(e) {
+      logoutLink.addEventListener('click', (e) => {
         e.preventDefault();
         logout();
       });
-    } else {
-      console.error("Logout link not found in the DOM");
     }
-  });
-} else {
-  console.log("Not on index.html, current path:", window.location.pathname);
-}
+    
+    if (deleteAccountButton) {
+      deleteAccountButton.addEventListener('click', deleteAccount);
+    }
+  }
+});
 
-
-// console.log("Firebase has been initialized: ", app);
+// Initial UI update
 updateUI(auth.currentUser);
-console.log("update successfully");
-
-

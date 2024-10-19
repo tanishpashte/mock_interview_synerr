@@ -103,7 +103,7 @@ input {
 }
 
 .direct-login-button{
-    width: 49%;
+    width: 100%;
     padding: 8px 20px;
     font-size: 14px;
     display: flex;
