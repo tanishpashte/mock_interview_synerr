@@ -31,6 +31,11 @@ function updateUI(user) {
   const userNav = document.getElementById('user-nav');
   const usernameSpan = document.getElementById('username');
   
+  if (!authNav || !userNav || !usernameSpan) {
+    console.error("One or more DOM elements not found");
+    return;
+  }
+
   if (user) {
     // Hide auth navigation and show user navigation
     authNav.style.display = 'none';
@@ -46,12 +51,24 @@ function updateUI(user) {
 }
 
 
-// Auth state listener
+let isRedirecting = false;
+
 onAuthStateChanged(auth, (user) => {
   updateUI(user);
-  // if (user && window.location.pathname !== 'https://tanishpashte.github.io/mock_interview_synerr/') {
-  //   window.location.href = 'https://tanishpashte.github.io/mock_interview_synerr/';
-  // }
+  
+  const currentPath = window.location.pathname;
+  const isHomePage = currentPath === '/mock_interview_synerr/' || currentPath.endsWith('index.html');
+
+  // Prevent continuous redirects
+  if (user && !isHomePage && !isRedirecting) {
+    isRedirecting = true;
+    window.location.href = 'https://tanishpashte.github.io/mock_interview_synerr/';
+  } else if (!user && isHomePage && !isRedirecting) {
+    isRedirecting = true;
+    window.location.href = 'signin-page.html';
+  } else {
+    isRedirecting = false;
+  }
 });
 
 
@@ -63,7 +80,7 @@ function signUp(username, email, password) {
     })
     .then(() => {
       console.log("Sign up successful");
-      window.location.href = 'https://tanishpashte.github.io/mock_interview_synerr/';
+      // window.location.href = 'https://tanishpashte.github.io/mock_interview_synerr/';
       // updateUI(auth.currentUser);
     })
     .catch((error) => {
@@ -75,7 +92,7 @@ function signIn(email, password) {
   signInWithEmailAndPassword(auth, email, password)
     .then(() => {
       console.log("Sign in successful");
-      window.location.href = 'https://tanishpashte.github.io/mock_interview_synerr/';
+      // window.location.href = 'https://tanishpashte.github.io/mock_interview_synerr/';
       // updateUI(auth.currentUser);
     })
     .catch((error) => {
@@ -88,7 +105,7 @@ function logout() {
   signOut(auth).then(() => {
     localStorage.removeItem('user');
     // updateUI(null);
-    window.location.href = 'https://tanishpashte.github.io/mock_interview_synerr/';
+    // window.location.href = 'https://tanishpashte.github.io/mock_interview_synerr/';
   }).catch((error) => {
     console.error("Error signing out:", error);
     alert("Failed to sign out. Please try again.");
@@ -105,7 +122,7 @@ function deleteAccount() {
   if (confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
     deleteUser(user).then(() => {
       localStorage.removeItem('user');
-      window.location.href = 'https://tanishpashte.github.io/mock_interview_synerr/';
+      // window.location.href = 'https://tanishpashte.github.io/mock_interview_synerr/';
       // updateUI(null);
       alert("Your account has been deleted successfully.");
     }).catch((error) => {
@@ -125,7 +142,7 @@ function handleGoogleAuth() {
   .then((result) => {
     console.log("User authenticated with Google successfully:", result.user);
     // Remove any redirect here, let the auth state listener handle it
-    window.location.href = 'https://tanishpashte.github.io/mock_interview_synerr/';
+    // window.location.href = 'https://tanishpashte.github.io/mock_interview_synerr/';
     // updateUI(auth.currentUser);
   }).catch((error) => {
       console.error("Error authenticating with Google:", error.code, error.message);
@@ -141,47 +158,55 @@ document.addEventListener('DOMContentLoaded', function() {
     const signupForm = document.getElementById("signup-form");
     const googleSignupButton = document.getElementById("google-signup-button");
 
-    signupForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const username = document.getElementById("signup-username").value;
-      const email = document.getElementById("signup-email").value;
-      const password = document.getElementById("signup-password").value;
-      const confirmPassword = document.getElementById("signup-confirm-password").value;
-      
-      if (password !== confirmPassword) {
-        console.error("Passwords do not match");
-        return;
-      }
-      
-      signUp(username, email, password);
-    });
+    if (signupForm) {
+      signupForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const username = document.getElementById("signup-username").value;
+        const email = document.getElementById("signup-email").value;
+        const password = document.getElementById("signup-password").value;
+        const confirmPassword = document.getElementById("signup-confirm-password").value;
 
-    googleSignupButton.addEventListener("click", handleGoogleAuth);
+        if (password !== confirmPassword) {
+          console.error("Passwords do not match");
+          return;
+        }
+
+        signUp(username, email, password);
+      });
+    }
+
+    if (googleSignupButton) {
+      googleSignupButton.addEventListener("click", handleGoogleAuth);
+    }
 
   } else if (currentPath.includes('signin-page.html')) {
     const signinForm = document.getElementById("signin-form");
     const googleSigninButton = document.getElementById("google-signin-button");
-    
-    signinForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const email = document.getElementById("signin-email").value;
-      const password = document.getElementById("signin-password").value;
-      signIn(email, password);
-    });
-    
-    googleSigninButton.addEventListener("click", handleGoogleAuth);
 
-  } else if (currentPath.includes('https://tanishpashte.github.io/mock_interview_synerr/')) {
+    if (signinForm) {
+      signinForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const email = document.getElementById("signin-email").value;
+        const password = document.getElementById("signin-password").value;
+        signIn(email, password);
+      });
+    }
+
+    if (googleSigninButton) {
+      googleSigninButton.addEventListener("click", handleGoogleAuth);
+    }
+
+  } else if (currentPath.includes('index.html') || currentPath === '/mock_interview_synerr/') {
     const logoutLink = document.getElementById('logout-link');
     const deleteAccountButton = document.getElementById('delete-account-button');
-    
+
     if (logoutLink) {
       logoutLink.addEventListener('click', (e) => {
         e.preventDefault();
         logout();
       });
     }
-    
+
     if (deleteAccountButton) {
       deleteAccountButton.addEventListener('click', deleteAccount);
     }
