@@ -36,13 +36,13 @@ async function startInterview() {
         const audioFormData = new FormData();
         audioFormData.append('audio_recording', audioBlob);
 
-        fetch('/interview/audio', {
-            method: 'POST',
-            body: audioFormData
-        })
-        .then(response => response.json())
-        .then(data => console.log("Audio processed", data))
-        .catch(error => console.error('Audio Error:', error));
+    //     fetch('/interview/audio', {
+    //         method: 'POST',
+    //         body: audioFormData
+    //     })
+    //     .then(response => response.json())
+    //     .then(data => console.log("Audio processed", data))
+    //     .catch(error => console.error('Audio Error:', error));
     }, 5000); // Sends audio every 5 seconds
 }
 
@@ -62,3 +62,140 @@ document.getElementById('toggle-audio').addEventListener('click', () => {
 
 // Start interview automatically when page loads
 window.onload = startInterview;
+
+// Gemini AI setup
+window.config = {
+    API_KEY: 'AIzaSyDPtcTAIt-nZsjp3qOKZP9e8w3RwtFnLsE'
+};
+
+const importMap = {
+    imports: {
+    "@google/generative-ai": "https://esm.run/@google/generative-ai"
+    }
+};
+
+const importMapScript = document.createElement('script');
+importMapScript.type = 'importmap';
+importMapScript.textContent = JSON.stringify(importMap);
+document.head.appendChild(importMapScript);
+
+async function loadGeminiAI(takenPrompt) {
+    const { GoogleGenerativeAI } = await import("@google/generative-ai");
+    const API_KEY = window.config.API_KEY;
+    const genAI = new GoogleGenerativeAI(API_KEY);
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+    async function generate() {
+        const prompt = takenPrompt ;
+        try {
+            let aiResponseDiv = document.querySelector('.ai-response');
+            if (aiResponseDiv) {
+                aiResponseDiv.textContent = 'Generating response...';
+            }
+    
+            const result = await model.generateContent(prompt);
+            const generatedText = result.response.text();
+            console.log("Generated text:", generatedText);
+            
+            if (aiResponseDiv) {
+                aiResponseDiv.textContent = generatedText;
+            }
+    
+            // Cancel any ongoing speech and ensure it's not paused
+            speechSynthesis.cancel();
+            if (speechSynthesis.paused) {
+                speechSynthesis.resume();
+            }
+    
+            setTimeout(() => {
+                const utterance = new SpeechSynthesisUtterance(generatedText);
+                utterance.rate = 1.0;
+                
+                utterance.onstart = () => console.log('Speech started');
+                utterance.onend = () => console.log('Speech ended');
+                utterance.onerror = (event) => console.error('Speech error:', event);
+                
+                speechSynthesis.speak(utterance);
+            }, 100);
+    
+        } catch (error) {
+            console.error("Error generating content:", error);
+            if (aiResponseDiv) {
+                aiResponseDiv.textContent = 'Error generating content. Please try again.';
+            }
+        }
+    }
+    generate();
+}
+
+const prompts = [
+    "The candidate is preparing for a mock interview. Please start by asking them about their background: 'Can you tell me about yourself? What position are you interviewing for, and what prior experience or skills do you have related to this role?",
+    "The interviewee is applying for the position of [job_role] and has mentioned [specific skills/experience]. Please generate a follow-up question to ask about their experience using [specific skills] in a professional setting, as well as how these skills can be applied to the role they're seeking",
+    "Ask the interviewee a behavioral question based on their job role, like 'Can you describe a time when you faced a significant challenge at work and how you overcame it? How did you ensure a positive outcome, and what did you learn from the experience?",
+    "The interviewee is applying for a software developer position. Please generate a technical question to assess their proficiency in [specific programming language, framework, or tool], and include follow-up questions to understand how they troubleshoot issues and optimize code performance."
+];
+for(let i = 0; i < prompts.length; i++){
+    loadGeminiAI(prompts[i] + "ask a short question of one line to the candidate");
+}
+loadGeminiAI();
+
+// Speech recognition setup
+let timeoutId;
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+        const outputDiv = document.querySelector('.candidate-response');
+
+        recognition.lang = 'en-US';
+        recognition.interimResults = true;
+        recognition.continuous = true;
+
+        recognition.onresult = function(event) {
+            let interimTranscript = '';
+            let finalTranscript = '';
+
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                const transcript = event.results[i][0].transcript;
+                if (event.results[i].isFinal) {
+                    finalTranscript += transcript + ' ';
+                } else {
+                    interimTranscript += transcript;
+                }
+            }
+
+            outputDiv.innerHTML = finalTranscript + '<i style="color:#999;">' + interimTranscript + '</i>';
+            console.log(finalTranscript );
+            loadGeminiAI(finalTranscript + "reply to this response");
+        };
+
+        recognition.onerror = function(event) {
+            console.error('Speech recognition error', event.error);
+            outputDiv.textContent = 'Error: ' + event.error;
+        };
+
+        function startListening() {
+            recognition.start();
+            outputDiv.textContent = 'Listening...';
+            startButton.disabled = true;
+
+            // Automatically stop listening after 10 seconds
+            timeoutId = setTimeout(() => {
+                stopListening();
+            }, 10000);
+        }
+
+        function stopListening() {
+            recognition.stop();
+            // outputDiv.textContent = 'Stopped listening.';
+            startButton.disabled = false;
+            clearTimeout(timeoutId);
+        }
+
+        // Event listener for the start button
+        startButton.addEventListener('click', startListening);
+
+        // Check for browser support
+        if (!('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
+            console.error('Speech recognition not supported in this browser');
+            outputDiv.textContent = 'Speech recognition not supported in this browser.';
+            startButton.disabled = true;
+        }
